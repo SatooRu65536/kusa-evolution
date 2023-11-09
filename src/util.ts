@@ -1,6 +1,7 @@
 import { LEVEL_STEP } from "./const";
 import { ILLUSTS } from "./illust";
 import { Grass } from "./type";
+import fetch from "node-fetch";
 
 /*
  * 草を取得する
