@@ -8,8 +8,8 @@ import {
   normalize,
   smoothLevel,
 } from "./src/util";
+import { GitHubErrorResponse } from "./src/type";
 import "dotenv/config";
-import { Grass } from "./src/type";
 
 const app = express();
 const port = 3000;
@@ -23,10 +23,15 @@ app.get("/evolution", async (req, res) => {
   if (!username) return res.status(400).send("username is not set");
 
   const grassRes = await getGrass(username, token);
-  if ("message" in grassRes) return res.status(500).send(grassRes.message);
-  if ("errors" in grassRes) return res.status(404).send(grassRes.errors[0].message);
 
-  const weeklyGrass = formatGrasse(grassRes as Grass);
+  if (grassRes instanceof Error) return res.status(500).send(grassRes.message);
+  if (grassRes.data.user === null) {
+    return res
+      .status(500)
+      .send((grassRes as GitHubErrorResponse).errors[0].message);
+  }
+
+  const weeklyGrass = formatGrasse(grassRes.data.user.contributionsCollection);
   const normalizedGrass = normalize(weeklyGrass);
   const grassLevels = normalizedGrass.map((g) => getLevel(g));
   const smoothLevels = smoothLevel(grassLevels);
@@ -37,8 +42,14 @@ app.get("/evolution", async (req, res) => {
   res.send(evolutionsSvg);
 });
 
-app.all("/", (req, res) => res.send("repo: https://github.com/SatooRu65536/kusa-evolution"))
+app.all("/", (req, res) =>
+  res.send("repo: https://github.com/SatooRu65536/kusa-evolution")
+);
 
-app.all("*", (req, res) => res.send("404 not found. repo: https://github.com/SatooRu65536/kusa-evolution"))
+app.all("*", (req, res) =>
+  res.send(
+    "404 not found. repo: https://github.com/SatooRu65536/kusa-evolution"
+  )
+);
 
 app.listen(port, () => console.log(`listening on port ${port}!`));

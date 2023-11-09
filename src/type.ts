@@ -8,20 +8,24 @@ export type GrassWeek = {
 };
 
 export type Grass = {
+  contributionCalendar: {
+    totalContributions: number;
+    weeks: GrassWeek[];
+  };
+};
+
+export type GitHubSuccessResponse = {
   data: {
     user: {
-      contributionsCollection: {
-        contributionCalendar: {
-          totalContributions: number;
-          weeks: GrassWeek[];
-        };
-      };
+      contributionsCollection: Grass;
     };
   };
 };
 
-export type GitHubError = {
-  data: { user: null };
+export type GitHubErrorResponse = {
+  data: {
+    user: null;
+  };
   errors: {
     type: string;
     path: string[];
@@ -29,6 +33,8 @@ export type GitHubError = {
     message: string;
   }[];
 };
+
+export type GitHubResponse = GitHubSuccessResponse | GitHubErrorResponse;
 
 export type Error = {
   message: string;

@@ -1,6 +1,6 @@
 import { LEVEL_STEP } from "./const";
 import { ILLUSTS } from "./illust";
-import { GitHubError, Grass } from "./type";
+import { GitHubResponse, Grass } from "./type";
 import axios from "axios";
 
 /*
@@ -12,7 +12,7 @@ import axios from "axios";
 export async function getGrass(
   username: string,
   token: string
-): Promise<Grass | GitHubError | Error> {
+): Promise<GitHubResponse | Error> {
   const githubApiEndpoint = "https://api.github.com/graphql";
 
   const query = `
@@ -38,7 +38,7 @@ export async function getGrass(
   };
 
   return axios
-    .post<Grass | GitHubError | Error>(
+    .post<GitHubResponse | Error>(
       githubApiEndpoint,
       {
         query,
@@ -60,9 +60,8 @@ export async function getGrass(
  * @param {Grass} grassRes - 草のレスポンス
  * @return {number[]} - 週ごとの草の数
  */
-export function formatGrasse(grassRes: Grass): number[] {
-  const contributionCalendar = grassRes.data.user.contributionsCollection;
-  const grasses = contributionCalendar.contributionCalendar.weeks;
+export function formatGrasse(grass: Grass): number[] {
+  const grasses = grass.contributionCalendar.weeks;
   const weeks = grasses.map((grass) => {
     return grass.contributionDays.map((day) => {
       return day.contributionCount;
