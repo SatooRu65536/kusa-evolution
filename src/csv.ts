@@ -69,14 +69,13 @@ export const ninja = (x: number, y: number) => `
   </g>
 `;
 
-export const ILLUSTS = [
-  enjin,
-  genjin,
-  kyujin,
-  shinjin,
-  yayoijin,
-  bushi,
-  gendaijin,
-  miraijin,
-  ninja,
-] as const;
+/*
+ * テキストのSVGを取得する
+ * @param {string} text - テキスト
+ * @param {number} x - x座標
+ * @param {number} y - y座標
+ * @return {string} - テキストのSVG
+ */
+export function text2csv(text: string, x: number, y: number): string {
+  return `<text transform="matrix(1 0 0 1 ${x} ${y})" class="st1 st2">${text}</text>`;
+}

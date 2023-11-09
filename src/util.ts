@@ -1,62 +1,9 @@
-import { LEVEL_STEP } from "./const";
-import { ILLUSTS } from "./illust";
-import { GitHubResponse, Grass } from "./type";
-import axios from "axios";
+import { text2csv } from "./csv";
+import { evolutionMap, evolutionStep } from "./evolutions";
+import { Grass } from "./type";
 
 /*
- * 草を取得する
- * @param {string} username - GitHubのユーザー名
- * @param {string} token - GitHubのトークン
- * @return {void}
- */
-export async function getGrass(
-  username: string,
-  token: string
-): Promise<GitHubResponse | Error> {
-  const githubApiEndpoint = "https://api.github.com/graphql";
-
-  const query = `
-    query($userName: String!) {
-      user(login: $userName) {
-        contributionsCollection {
-          contributionCalendar {
-            totalContributions
-            weeks {
-              contributionDays {
-                contributionCount
-                date
-              }
-            }
-          }
-        }
-      }
-    }
-`;
-
-  const variables = {
-    userName: username,
-  };
-
-  return axios
-    .post<GitHubResponse | Error>(
-      githubApiEndpoint,
-      {
-        query,
-        variables,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-    .then((response) => response.data)
-    .catch((error) => error);
-}
-
-/*
- * 草のオブジェクトを週ごとの草の数に変換する
+ * 草のレスポンスを配列に変換する
  * @param {Grass} grassRes - 草のレスポンス
  * @return {number[]} - 週ごとの草の数
  */
@@ -68,11 +15,17 @@ export function formatGrasse(grass: Grass): number[] {
     });
   });
 
-  const weekly = weeks.map((week) => {
-    return week.reduce((a, b) => a + b);
-  });
+  return weeks.flat();
+}
 
-  return weekly;
+/*
+ * 小数点第n位を四捨五入する
+ * @param {number} num - 数値
+ * @param {number} digit - 桁数
+ * @return {number} - 四捨五入された数値
+ */
+function round(num: number, digit: number): number {
+  return Math.round(num * 10 ** digit) / 10 ** digit;
 }
 
 /*
@@ -86,23 +39,13 @@ export function normalize(arr: number[]): number[] {
 }
 
 /*
- * 小数点第n位を四捨五入する
- * @param {number} num - 数値
- * @param {number} digit - 桁数
- * @return {number} - 四捨五入された数値
- */
-export function round(num: number, digit: number): number {
-  return Math.round(num * 10 ** digit) / 10 ** digit;
-}
-
-/*
  * 数値からレベルを取得する
  * @param {number} n - 数値
  * @return {number} - レベル
  */
-export function getLevel(n: number): number {
-  for (let i = 0; i < LEVEL_STEP.length; i++) {
-    if (n <= LEVEL_STEP[i]) return i;
+export function num2Level(n: number): number {
+  for (let i = 0; i < evolutionStep.length; i++) {
+    if (n <= evolutionStep[i]) return i;
   }
   return 0;
 }
@@ -132,17 +75,17 @@ export function smoothLevel(levels: number[]): number[] {
  * @return {number} - 調整されたレベル
  */
 export function adjustLevel(levels: number[], length: number): number[] {
-  return length >= 2 ? levels.slice(0, length) : levels;
+  return length < 2 ? levels : levels.slice(-length);
 }
 
 /*
  * 乱数を生成する
  * @param {number} min - 最小値
  * @param {number} max - 最大値
- * @param {string} username - ユーザー名
+ * @param {string} seed - シード
  * @return {number} - シード
  */
-function random(min: number, max: number, seed: string): number {
+function randint(min: number, max: number, seed: string): number {
   const date = new Date();
   const num1 = date.getFullYear() + date.getMonth() + date.getDate();
   const nums = seed.split("").map((s) => s.charCodeAt(0));
@@ -152,36 +95,26 @@ function random(min: number, max: number, seed: string): number {
 }
 
 /*
- * レベルからイラストのパスを取得する
- * @param {number} level - レベル
- * @param {number} x - イラストのx座標
- * @return {string} - イラストのパス
+ * 一定確率で指定した数値を置換する
+ * @param {number} levels - レベル
+ * @param {string} username - ユーザー名
+ * @param {number} replace - 置換前の数値
+ * @param {number} set - 置換後の数値
+ * @return {number} - 置換されたレベル
  */
-export function getIllust(
+export function replaceRandom(
+  levels: number[],
   username: string,
-  level: number,
-  x: number,
-  y: number
-): string {
-  if (0 <= level && level < ILLUSTS.length - 1) {
-    if (level === 5) {
-      const randomNum = random(0, 100, username);
-      if (randomNum === 1) return ILLUSTS[ILLUSTS.length - 1](x, y);
-      else return ILLUSTS[level + 1](x, y);
-    }
-    return ILLUSTS[level](x, y);
-  } else return ILLUSTS[ILLUSTS.length - 1](x, y);
-}
+  replace: number,
+  set: number
+): number[] {
+  levels.map((l, i) => {
+    if (l !== replace) return levels;
+    if (randint(0, 20, username) === 1) return set;
+    else return l;
+  });
 
-/*
- * テキストのSVGを取得する
- * @param {string} text - テキスト
- * @param {number} x - x座標
- * @param {number} y - y座標
- * @return {string} - テキストのSVG
- */
-function getTextSvg(text: string, x: number, y: number): string {
-  return `<text transform="matrix(1 0 0 1 ${x} ${y})" class="st1 st2">${text}</text>`;
+  return levels;
 }
 
 /*
@@ -189,8 +122,7 @@ function getTextSvg(text: string, x: number, y: number): string {
  * @param {Date} date - 日付
  * @return {string} - フォーマットされた日付
  */
-function getFormattedDate(date: Date): string {
-  // 月を英語表記にする
+export function getFormattedDate(date: Date): string {
   const month = date.toLocaleString("en", { month: "long" });
   const day = date.getDate();
 
@@ -198,16 +130,28 @@ function getFormattedDate(date: Date): string {
 }
 
 /*
- * レベルの配列から進化のイラストを取得する
- * @param {number[]} levels - レベルの配列
- * @param {number} length - 表示するイラストの数
+ * レベルからイラストのパスを取得する
+ * @param {number} level - レベル
+ * @param {number} x - イラストのx座標
  * @return {string} - イラストのパス
  */
-export function getEvolutions(levels: number[], usrname: string): string {
+function level2csvPart(level: number, x: number, y: number): string {
+  // evolutionMap の中から level と一致するものを取得する
+  const type = evolutionMap.find((t) => t.level === level);
+  if (type !== undefined) return type.csv(x, y);
+  return evolutionMap[0].csv(x, y);
+}
+
+/*
+ * レベルの配列から進化のイラストを取得する
+ * @param {number[]} levels - レベルの配列
+ * @return {string} - イラストのパス
+ */
+export function levels2csv(levels: number[]): string {
   const size = { width: 162 * levels.length, height: 305 };
   let content = "";
   for (let i = 0; i < levels.length; i++) {
-    content += getIllust(usrname, levels[i], 162 * i, 0);
+    content += level2csvPart(levels[i], 162 * i, 0);
   }
 
   const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size.width} ${size.height}">`;
@@ -226,9 +170,9 @@ export function getEvolutions(levels: number[], usrname: string): string {
   const endDate = startDate.setDate(startDate.getDate() - length + 1);
   const startDateText = getFormattedDate(new Date(endDate));
   const endDateText = getFormattedDate(new Date());
-  const startDateSvg = getTextSvg(startDateText, 30, 305);
+  const startDateSvg = text2csv(startDateText, 30, 305);
   const x = 162 * levels.length - 130;
-  const endDateSvg = getTextSvg(endDateText, x, 305);
+  const endDateSvg = text2csv(endDateText, x, 305);
 
   return `${svgOpen}${style}${startDateSvg}${endDateSvg}${content}</svg>`;
 }

@@ -1,12 +1,13 @@
 import express from "express";
+import { fetchGrass } from "./src/fetch";
 import {
   adjustLevel,
   formatGrasse,
-  getEvolutions,
-  getGrass,
-  getLevel,
+  num2Level,
   normalize,
   smoothLevel,
+  replaceRandom,
+  levels2csv,
 } from "./src/util";
 import { GitHubErrorResponse } from "./src/type";
 import "dotenv/config";
@@ -22,7 +23,7 @@ app.get("/evolution", async (req, res) => {
   if (!token) return res.status(500).send("GITHUB_TOKEN is not set");
   if (!username) return res.status(400).send("username is not set");
 
-  const grassRes = await getGrass(username, token);
+  const grassRes = await fetchGrass(username, token);
 
   if (grassRes instanceof Error) return res.status(500).send(grassRes.message);
   if (grassRes.data.user === null) {
@@ -33,10 +34,11 @@ app.get("/evolution", async (req, res) => {
 
   const weeklyGrass = formatGrasse(grassRes.data.user.contributionsCollection);
   const normalizedGrass = normalize(weeklyGrass);
-  const grassLevels = normalizedGrass.map((g) => getLevel(g));
+  const grassLevels = normalizedGrass.map((g) => num2Level(g));
   const smoothLevels = smoothLevel(grassLevels);
   const adjustedSmoothLevels = adjustLevel(smoothLevels, length);
-  const evolutionsSvg = getEvolutions(adjustedSmoothLevels, username);
+  const replacedLevels = replaceRandom(adjustedSmoothLevels, username, 5, -1);
+  const evolutionsSvg = levels2csv(replacedLevels);
 
   res.setHeader("Content-Type", "image/svg+xml");
   res.send(evolutionsSvg);
