@@ -4,8 +4,9 @@
 ![kusa evolution](https://kusa-evolution.onrender.com/evolution?username=SatooRu65536)
 
 ## 説明
-GitHubの草の量によって、猿人が進化したり退化したりします。  
-ただし、コントリビューションが 0 になると猿人に戻ってしまいます。
+コントリビューションが前日以上であれば進化し、
+前日未満であれば退化します。
+ただし、コントリビューションが 0 の場合は問答無用で猿人に戻ってしまいます。
 
 #### 1. 猿人
 <img src="./assets/enjin.svg" height="120px" />
