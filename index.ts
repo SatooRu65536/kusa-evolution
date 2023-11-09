@@ -37,4 +37,8 @@ app.get("/evolution", async (req, res) => {
   res.send(evolutionsSvg);
 });
 
+app.all("/", (req, res) => res.send("repo: https://github.com/SatooRu65536/kusa-evolution"))
+
+app.all("*", (req, res) => res.send("404 not found. repo: https://github.com/SatooRu65536/kusa-evolution"))
+
 app.listen(port, () => console.log(`listening on port ${port}!`));
