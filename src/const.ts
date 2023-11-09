@@ -12,6 +12,6 @@ export const TYPES = [
 ] as const;
 
 // 0-100を段階的に分ける
-export const LEVEL_STEP = TYPES.map((_, i) =>
+export const LEVEL_STEP = TYPES.filter((t) => t.level >= 0).map((_, i) =>
   Math.floor(((i + 1) * 100) / TYPES.length)
 );

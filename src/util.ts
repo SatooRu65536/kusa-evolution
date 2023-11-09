@@ -102,6 +102,34 @@ export function getLevel(n: number): number {
 }
 
 /*
+ * レベルの配列をなめらかなレベルの配列に変換する
+ * @param {number} levels - レベル
+ * @return {number} - なめらかなレベル
+ */
+export function smoothLevel(levels: number[]): number[] {
+  for (let i = 0; i < levels.length - 1; i++) {
+    if (i === 0) continue;
+
+    const current = levels[i];
+    const prev = levels[i - 1];
+    if (current >= prev) levels[i] = prev + 1;
+    else if (current < prev) levels[i] = prev - 1;
+  }
+
+  return levels;
+}
+
+/*
+ * レベルの配列を指定した長さに調整する
+ * @param {number} levels - レベル
+ * @param {number} length - 長さ
+ * @return {number} - 調整されたレベル
+ */
+export function adjustLevel(levels: number[], length: number): number[] {
+  return length >= 2 ? levels.slice(0, length) : levels;
+}
+
+/*
  * レベルからイラストのパスを取得する
  * @param {number} level - レベル
  * @param {number} x - イラストのx座標
@@ -112,14 +140,62 @@ export function getIllust(level: number, x: number, y: number): string {
   else return ILLUSTS[ILLUSTS.length - 1](x, y);
 }
 
-export function getEvolutions(levels: number[]): string {
-  let svg = "";
-  const size = { width: 20, height: levels.length * 15 };
+/*
+ * テキストのSVGを取得する
+ * @param {string} text - テキスト
+ * @param {number} x - x座標
+ * @param {number} y - y座標
+ * @return {string} - テキストのSVG
+ */
+function getTextSvg(text: string, x: number, y: number): string {
+  return `<text transform="matrix(1 0 0 1 ${x} ${y})" class="st1 st2">${text}</text>`;
+}
 
+/*
+ * Dateからフォーマットされた日付を取得する
+ * @param {Date} date - 日付
+ * @return {string} - フォーマットされた日付
+ */
+function getFormattedDate(date: Date): string {
+  // 月を英語表記にする
+  const month = date.toLocaleString("en", { month: "long" });
+  const day = date.getDate();
+
+  return `${month} ${day}`;
+}
+
+/*
+ * レベルの配列から進化のイラストを取得する
+ * @param {number[]} levels - レベルの配列
+ * @param {number} length - 表示するイラストの数
+ * @return {string} - イラストのパス
+ */
+export function getEvolutions(levels: number[]): string {
+  const size = { width: 162 * levels.length, height: 305 };
+  let content = "";
   for (let i = 0; i < levels.length; i++) {
-    svg += getIllust(levels[i], 0, i * 15);
+    content += getIllust(levels[i], 162 * i, 0);
   }
 
-  svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size.width} ${size.height}">${svg}</svg>`;
-  return svg;
+  const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size.width} ${size.height}">`;
+  const style = `
+    <defs>
+      <style>
+        rect {
+          fill: none;
+        }
+      </style>
+    </defs>
+  `;
+
+  const length = levels.length;
+  const startDate = new Date();
+  const endDate = startDate.setDate(startDate.getDate() - length + 1);
+  const startDateText = getFormattedDate(new Date(endDate));
+  const endDateText = getFormattedDate(new Date());
+  const startDateSvg = getTextSvg(startDateText, 30, 305);
+  const x = 162 * levels.length - 130;
+  const endDateSvg = getTextSvg(endDateText, x, 305);
+
+  return `${svgOpen}${style}${startDateSvg}${endDateSvg}${content}</svg>`;
 }
