@@ -41,14 +41,16 @@ USER_NAME には自身のGitHubのユーザー名を入れてください。
 ```
 
 ### パラメータ
-| パラメータ | 必須 | デフォルト値 | 説明 |
-|:---|:---:|:---:|:---|
-| username | ○ | - | GitHubのユーザー名 |
-| length |  | 7 | 人間の数 |
-| darkmode |  | false | ダークモード ※ |
-| color |  | black | 色 ※ (cssで指定できる色全て使用可) |
+| パラメータ   | 必須   | デフォルト値   | 説明                              |
+| :--------- | :---: | :----------: | :-------------------------------- |
+| username   |   ○   |      -       | GitHubのユーザー名                  |
+| length     |       |      7       | 人間の数                           |
+| darkmode   |       |    false     | ダークモード ※                      |
+| color      |       |    black     | 色 ※ (cssで指定できる色全て使用可)    |
+| bg         |       |    white     | 背景色 ※ (cssで指定できる色全て使用可) |
 
-※ darkmode と color を同時に指定した場合、color が優先されます。
+※ `darkmode` と `color`, `darkmode` と `bg` を同時に指定した場合、
+`color` または `bg` が優先されます。
 
 ## ライセンス
 [MIT](./LICENSE)

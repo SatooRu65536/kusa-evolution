@@ -147,7 +147,11 @@ function level2csvPart(level: number, x: number, y: number): string {
  * @param {number[]} levels - レベルの配列
  * @return {string} - イラストのパス
  */
-export function levels2csv(levels: number[], color: string): string {
+export function levels2csv(
+  levels: number[],
+  color: string,
+  bg: string
+): string {
   const size = { width: 162 * levels.length, height: 305 };
   let content = "";
   for (let i = 0; i < levels.length; i++) {
@@ -158,6 +162,9 @@ export function levels2csv(levels: number[], color: string): string {
   const style = `
     <defs>
       <style>
+        svg {
+          background-color: ${bg};
+        }
         rect {
           fill: none;
         }
