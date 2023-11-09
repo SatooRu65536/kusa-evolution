@@ -34,17 +34,21 @@
 
 
 ## 使い方
-GITHUB_USERNAME には自身のGitHubのユーザー名を入れてください。
+USER_NAME には自身のGitHubのユーザー名を入れてください。
 
 ```markdown
-![kusa evolution](https://kusa-evolution.onrender.com/evolution?username={GITHUB_USERNAME})
+![kusa evolution](https://kusa-evolution.onrender.com/evolution?username={USER_NAME})
 ```
 
 ### パラメータ
 | パラメータ | 必須 | デフォルト値 | 説明 |
-| --- | --- | --- | --- |
-| username | ○ |  | GitHubのユーザー名 |
+|:---|:---:|:---:|:---|
+| username | ○ | - | GitHubのユーザー名 |
 | length |  | 7 | 人間の数 |
+| darkmode |  | false | ダークモード ※ |
+| color |  | black | 色 ※ (cssで指定できる色全て使用可) |
+
+※ darkmode と color を同時に指定した場合、color が優先されます。
 
 ## ライセンス
 [MIT](./LICENSE)

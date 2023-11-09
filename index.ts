@@ -19,6 +19,9 @@ app.get("/evolution", async (req, res) => {
   const token = process.env.GITHUB_TOKEN;
   const username = req.query.username as string | undefined;
   const length = req.query.length ? Number(req.query.length) : 7;
+  const darkMode = req.query.darkmode ? true : false;
+  let color = darkMode ? "beige" : "black";
+  if (req.query.color) color = req.query.color as string;
 
   if (!token) return res.status(500).send("GITHUB_TOKEN is not set");
   if (!username) return res.status(400).send("username is not set");
@@ -38,7 +41,7 @@ app.get("/evolution", async (req, res) => {
   const smoothLevels = smoothLevel(grassLevels);
   const adjustedSmoothLevels = adjustLevel(smoothLevels, length);
   const replacedLevels = replaceRandom(adjustedSmoothLevels, username, 5, -1);
-  const evolutionsSvg = levels2csv(replacedLevels);
+  const evolutionsSvg = levels2csv(replacedLevels, color);
 
   res.setHeader("Content-Type", "image/svg+xml");
   res.send(evolutionsSvg);
