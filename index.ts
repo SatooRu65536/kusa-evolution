@@ -29,7 +29,7 @@ app.get("/evolution", async (req, res) => {
   const grassLevels = normalizedGrass.map((g) => getLevel(g));
   const smoothLevels = smoothLevel(grassLevels);
   const adjustedSmoothLevels = adjustLevel(smoothLevels, length);
-  const evolutionsSvg = getEvolutions(adjustedSmoothLevels);
+  const evolutionsSvg = getEvolutions(adjustedSmoothLevels, username);
 
   res.setHeader("Content-Type", "image/svg+xml");
   res.send(evolutionsSvg);

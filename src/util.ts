@@ -37,7 +37,7 @@ export async function getGrass(
     userName: username,
   };
 
-  return　axios
+  return axios
     .post<Grass | Error>(
       githubApiEndpoint,
       {
@@ -137,14 +137,41 @@ export function adjustLevel(levels: number[], length: number): number[] {
 }
 
 /*
+ * 乱数を生成する
+ * @param {number} min - 最小値
+ * @param {number} max - 最大値
+ * @param {string} username - ユーザー名
+ * @return {number} - シード
+ */
+function random(min: number, max: number, seed: string): number {
+  const date = new Date();
+  const num1 = date.getFullYear() + date.getMonth() + date.getDate();
+  const nums = seed.split("").map((s) => s.charCodeAt(0));
+  const num2 = nums.reduce((sum, a) => sum + a);
+
+  return (num1 * num2) % (max - min + 1) + min;
+}
+
+/*
  * レベルからイラストのパスを取得する
  * @param {number} level - レベル
  * @param {number} x - イラストのx座標
  * @return {string} - イラストのパス
  */
-export function getIllust(level: number, x: number, y: number): string {
-  if (0 <= level && level < ILLUSTS.length - 1) return ILLUSTS[level](x, y);
-  else return ILLUSTS[ILLUSTS.length - 1](x, y);
+export function getIllust(
+  username: string,
+  level: number,
+  x: number,
+  y: number
+): string {
+  if (0 <= level && level < ILLUSTS.length - 1) {
+    if (level === 5) {
+      const randomNum = random(0, 100, username);
+      if (randomNum === 1) return ILLUSTS[ILLUSTS.length - 1](x, y);
+      else return ILLUSTS[level + 1](x, y);
+    }
+    return ILLUSTS[level](x, y);
+  } else return ILLUSTS[ILLUSTS.length - 1](x, y);
 }
 
 /*
@@ -177,11 +204,11 @@ function getFormattedDate(date: Date): string {
  * @param {number} length - 表示するイラストの数
  * @return {string} - イラストのパス
  */
-export function getEvolutions(levels: number[]): string {
+export function getEvolutions(levels: number[], usrname: string): string {
   const size = { width: 162 * levels.length, height: 305 };
   let content = "";
   for (let i = 0; i < levels.length; i++) {
-    content += getIllust(levels[i], 162 * i, 0);
+    content += getIllust(usrname, levels[i], 162 * i, 0);
   }
 
   const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size.width} ${size.height}">`;
