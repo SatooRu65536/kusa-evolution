@@ -20,6 +20,16 @@ export type Grass = {
   };
 };
 
+export type GitHubError = {
+  data: { user: null };
+  errors: {
+    type: string;
+    path: string[];
+    locations: string[];
+    message: string;
+  }[];
+};
+
 export type Error = {
   message: string;
   documentation_url: string;

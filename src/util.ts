@@ -1,6 +1,6 @@
 import { LEVEL_STEP } from "./const";
 import { ILLUSTS } from "./illust";
-import { Grass } from "./type";
+import { GitHubError, Grass } from "./type";
 import axios from "axios";
 
 /*
@@ -12,7 +12,7 @@ import axios from "axios";
 export async function getGrass(
   username: string,
   token: string
-): Promise<Grass | Error> {
+): Promise<Grass | GitHubError | Error> {
   const githubApiEndpoint = "https://api.github.com/graphql";
 
   const query = `
@@ -38,7 +38,7 @@ export async function getGrass(
   };
 
   return axios
-    .post<Grass | Error>(
+    .post<Grass | GitHubError | Error>(
       githubApiEndpoint,
       {
         query,
@@ -149,7 +149,7 @@ function random(min: number, max: number, seed: string): number {
   const nums = seed.split("").map((s) => s.charCodeAt(0));
   const num2 = nums.reduce((sum, a) => sum + a);
 
-  return (num1 * num2) % (max - min + 1) + min;
+  return ((num1 * num2) % (max - min + 1)) + min;
 }
 
 /*
