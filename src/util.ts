@@ -1,7 +1,7 @@
 import { LEVEL_STEP } from "./const";
 import { ILLUSTS } from "./illust";
 import { Grass } from "./type";
-import fetch from "node-fetch";
+import axios from "axios";
 
 /*
  * 草を取得する
@@ -13,40 +13,46 @@ export async function getGrass(
   username: string,
   token: string
 ): Promise<Grass | Error> {
-  return fetch("https://api.github.com/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      query: `
-        query($userName:String!) {
-          user(login: $userName){
-            contributionsCollection {
-              contributionCalendar {
-                totalContributions
-                weeks {
-                  contributionDays {
-                    contributionCount
-                    date
-                  }
-                }
+  const githubApiEndpoint = "https://api.github.com/graphql";
+
+  const query = `
+    query($userName: String!) {
+      user(login: $userName) {
+        contributionsCollection {
+          contributionCalendar {
+            totalContributions
+            weeks {
+              contributionDays {
+                contributionCount
+                date
               }
             }
           }
         }
-      `,
-      variables: {
-        userName: username,
+      }
+    }
+`;
+
+  const variables = {
+    userName: username,
+  };
+
+  return　axios
+    .post<Grass | Error>(
+      githubApiEndpoint,
+      {
+        query,
+        variables,
       },
-    }),
-  })
-    .then((res) => res.json() as Promise<Grass>)
-    .catch((err) => {
-      console.log(err);
-      return err as Promise<Error>;
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    .then((response) => response.data)
+    .catch((error) => error);
 }
 
 /*
