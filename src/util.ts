@@ -156,7 +156,7 @@ export function levels2csv(
   const size = { width: width * levels.length, height: 305 };
   let content = "";
   for (let i = 0; i < levels.length; i++) {
-    content += level2csvPart(levels[i], width * i, 0);
+    content += level2csvPart(levels[i], width * i, -10);
   }
 
   const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size.width} ${size.height}">`;
@@ -184,9 +184,9 @@ export function levels2csv(
   const endDate = startDate.setDate(startDate.getDate() - length + 1);
   const startDateText = getFormattedDate(new Date(endDate));
   const endDateText = getFormattedDate(new Date());
-  const startDateSvg = text2csv(startDateText, 30, 305);
+  const startDateSvg = text2csv(startDateText, 30, 295);
   const x = width * levels.length - 130;
-  const endDateSvg = text2csv(endDateText, x, 305);
+  const endDateSvg = text2csv(endDateText, x, 295);
 
   return `${svgOpen}${style}${startDateSvg}${endDateSvg}${content}</svg>`;
 }
