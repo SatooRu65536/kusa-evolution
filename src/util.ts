@@ -1,5 +1,5 @@
 import { text2csv } from "./csv";
-import { evolutionMap, evolutionStep } from "./evolutions";
+import { evolutionMap } from "./evolutions";
 import { Grass } from "./type";
 
 /*
@@ -29,40 +29,21 @@ function round(num: number, digit: number): number {
 }
 
 /*
- * 配列の最大値を100としたときの配列を返す
- * @param {number[]} arr - 数値の配列
- * @return {number[]} - 正規化された配列
- */
-export function normalize(arr: number[]): number[] {
-  const max = Math.max(...arr);
-  return arr.map((num) => round((num / max) * 100, 1));
-}
-
-/*
- * 数値からレベルを取得する
- * @param {number} n - 数値
- * @return {number} - レベル
- */
-export function num2Level(n: number): number {
-  for (let i = 0; i < evolutionStep.length; i++) {
-    if (n <= evolutionStep[i]) return i;
-  }
-  return 0;
-}
-
-/*
  * レベルの配列をなめらかなレベルの配列に変換する
  * @param {number} levels - レベル
  * @return {number} - なめらかなレベル
  */
 export function smoothLevel(levels: number[]): number[] {
+  levels[0] = 0;
   for (let i = 0; i < levels.length - 1; i++) {
     if (i === 0) continue;
 
     const current = levels[i];
     const prev = levels[i - 1];
-    if (current >= prev) levels[i] = prev + 1;
+    if (current === 0) levels[i] = 0;
+    else if (current > prev) levels[i] = prev + 1;
     else if (current < prev) levels[i] = prev - 1;
+    else levels[i] = prev;
   }
 
   return levels;

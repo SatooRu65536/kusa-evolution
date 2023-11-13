@@ -3,8 +3,6 @@ import { fetchGrass } from "./src/fetch";
 import {
   adjustLevel,
   formatGrasse,
-  num2Level,
-  normalize,
   smoothLevel,
   replaceRandom,
   levels2csv,
@@ -39,9 +37,7 @@ app.get("/evolution", async (req, res) => {
   }
 
   const weeklyGrass = formatGrasse(grassRes.data.user.contributionsCollection);
-  const normalizedGrass = normalize(weeklyGrass);
-  const grassLevels = normalizedGrass.map((g) => num2Level(g));
-  const smoothLevels = smoothLevel(grassLevels);
+  const smoothLevels = smoothLevel(weeklyGrass);
   const adjustedSmoothLevels = adjustLevel(smoothLevels, length);
   const replacedLevels = replaceRandom(adjustedSmoothLevels, username, 5, -1);
   const evolutionsSvg = levels2csv(replacedLevels, color, bg);
