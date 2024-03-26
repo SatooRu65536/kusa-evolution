@@ -1,28 +1,28 @@
 export type Date = `${number}-${number}-${number}`;
 
-export type GrassWeek = {
+export interface GrassWeek {
   contributionDays: {
     contributionCount: number;
     date: Date;
   }[];
-};
+}
 
-export type Grass = {
+export interface Grass {
   contributionCalendar: {
     totalContributions: number;
     weeks: GrassWeek[];
   };
-};
+}
 
-export type GitHubSuccessResponse = {
+export interface GitHubSuccessResponse {
   data: {
     user: {
       contributionsCollection: Grass;
     };
   };
-};
+}
 
-export type GitHubErrorResponse = {
+export interface GitHubErrorResponse {
   data: {
     user: null;
   };
@@ -32,11 +32,11 @@ export type GitHubErrorResponse = {
     locations: string[];
     message: string;
   }[];
-};
+}
 
 export type GitHubResponse = GitHubSuccessResponse | GitHubErrorResponse;
 
-export type Error = {
+export interface Error {
   message: string;
   documentation_url: string;
-};
+}
