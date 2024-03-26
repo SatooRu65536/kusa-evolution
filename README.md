@@ -1,12 +1,12 @@
 # kusa evolution
 毎日の草で進化する猿人  
 
-![kusa evolution](https://kusa-evolution.onrender.com/evolution?username=SatooRu65536)
+![kusa evolution](https://kusa.satooru.dev/evolution?username=SatooRu65536)
 
 ## 説明
 コントリビューション数に応じて猿人が進化します。　　
 前日よりも多ければ進化、少なければ退化します。  
-ただし、コントリビューションが 0 の場合は問答無用で猿人に戻ってしまいます。
+ただし 0 の場合は問答無用で猿人に戻ってしまいます。
 
 #### 1. 猿人
 <img src="./assets/enjin.svg" height="120px" />
@@ -37,20 +37,18 @@
 USER_NAME には自身のGitHubのユーザー名を入れてください。
 
 ```markdown
-![kusa evolution](https://kusa-evolution.onrender.com/evolution?username={USER_NAME})
+![kusa evolution](https://kusa.satooru.dev//evolution?username={USER_NAME})
 ```
 
 ### パラメータ
 | パラメータ   | 必須   | デフォルト値   | 説明                              |
 | :--------- | :---: | :----------: | :-------------------------------- |
 | username   |   ○   |      -       | GitHubのユーザー名                  |
-| length     |       |      7       | 人間の数                           |
-| darkmode   |       |    false     | ダークモード ※                      |
+| darkmode   |       |    false     | ダークモード ※                     |
 | color      |       |    black     | 色 ※ (cssで指定できる色全て使用可)    |
 | bg         |       |    white     | 背景色 ※ (cssで指定できる色全て使用可) |
 
-※ `darkmode` と `color`, `darkmode` と `bg` を同時に指定した場合、
-`color` または `bg` が優先されます。
+※ `darkmode` と `color` もしくは `darkmode` と `bg` を同時に指定した場合は `color`  `bg` が優先されます。
 
 ## ライセンス
 [MIT](./LICENSE)
