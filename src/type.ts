@@ -34,9 +34,9 @@ export interface GitHubErrorResponse {
   }[];
 }
 
-export type GitHubResponse = GitHubSuccessResponse | GitHubErrorResponse;
-
-export interface Error {
+export interface GitHubApiError {
   message: string;
   documentation_url: string;
 }
+
+export type GitHubResponse = GitHubSuccessResponse | GitHubErrorResponse | GitHubApiError;

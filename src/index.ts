@@ -42,6 +42,12 @@ app.get('/evolution', async (c) => {
     return c.body(svg, 500, header);
   }
 
+  if (!('data' in grassRes) || grassRes.data.user === null) {
+    const message = 'message' in grassRes ? grassRes.message : 'ユーザーが見つかりません';
+    const svg = toMessageSvg(message);
+    return c.body(svg, 500, header);
+  }
+
   const levels = formatGrasse(grassRes.data.user.contributionsCollection);
   const smoothedLevels = smoothLevels(levels, 7);
   const adjustedLevels = adjustLevels(smoothedLevels, 7);
