@@ -1,11 +1,6 @@
 import { GitHubResponse } from './type';
 
-/*
- * 草を取得する
- * @param {string} username - GitHubのユーザー名
- * @param {string} token - GitHubのトークン
- * @return {void}
- */
+// 草を取得する
 export async function fetchGrass(userName: string, token: string): Promise<GitHubResponse | Error> {
   const githubApiEndpoint = 'https://api.github.com/graphql';
 
@@ -28,19 +23,22 @@ export async function fetchGrass(userName: string, token: string): Promise<GitHu
     }
   `;
 
-  return await fetch(githubApiEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      'User-Agent': 'MyCustomUserAgent',
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => data as GitHubResponse)
-    .catch((error) => error);
+  try {
+    const response = await fetch(githubApiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'User-Agent': 'MyCustomUserAgent',
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    });
+
+    return (await response.json()) as GitHubResponse;
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error));
+  }
 }

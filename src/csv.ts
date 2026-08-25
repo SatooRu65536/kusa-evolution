@@ -62,24 +62,12 @@ export const ninja = (x: number, y: number) => `
   </g>
 `;
 
-/*
- * テキストのSVGを取得する
- * @param {string} text - テキスト
- * @param {number} x - x座標
- * @param {number} y - y座標
- * @return {string} - テキストのSVG
- */
+// テキストのSVGを取得する
 export function text(text: string, x: number, y: number): string {
   return `<text transform="matrix(1 0 0 1 ${x} ${y})">${text}</text>`;
 }
 
-/**
- * SVGのタグを追加する
- * @param svgContent svgのコンテンツ
- * @param width 幅
- * @param height 高さ
- * @returns SVG
- */
+// SVGのタグを追加する
 export function toSvg(svgContent: string, width: number, height: number, style = '') {
   const openTag = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">`;
   const closeTag = `</svg>`;
@@ -87,11 +75,7 @@ export function toSvg(svgContent: string, width: number, height: number, style =
   return `${openTag}${style}${svgContent}${closeTag}`;
 }
 
-/**
- * メッセージをSVGに変換する
- * @param message メッセージ
- * @returns SVG
- */
+// メッセージをSVGに変換する
 export function toMessageSvg(message: string) {
   return toSvg(text(message, 0, 0), 910, 305);
 }

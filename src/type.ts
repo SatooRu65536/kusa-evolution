@@ -1,9 +1,9 @@
-export type Date = `${number}-${number}-${number}`;
+export type DateString = `${number}-${number}-${number}`;
 
 export interface GrassWeek {
   contributionDays: {
     contributionCount: number;
-    date: Date;
+    date: DateString;
   }[];
 }
 
