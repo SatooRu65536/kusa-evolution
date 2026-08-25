@@ -12,7 +12,7 @@ export interface Env extends Record<string, string> {
 const app = new Hono();
 
 const SVG_HEADER = { 'Content-Type': 'image/svg+xml' };
-const NINJA_CHANCE_PERCENT = 5;
+const NINJA_CHANCE_PERCENT = 1;
 
 function errorSvg(c: Context, message: string, status: 400 | 500) {
   return c.body(toMessageSvg(message), status, SVG_HEADER);
