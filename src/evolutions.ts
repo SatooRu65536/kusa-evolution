@@ -1,5 +1,7 @@
 import { bushi, enjin, gendaijin, genjin, kyujin, miraijin, ninja, shinjin, yayoijin } from './csv';
 
+export const NINJA_LEVEL = -1;
+
 export const evolutionMap = [
   { level: 0, name: '猿人', csv: enjin },
   { level: 1, name: '原人', csv: genjin },
@@ -9,5 +11,5 @@ export const evolutionMap = [
   { level: 5, name: '武士', csv: bushi },
   { level: 6, name: '現代人', csv: gendaijin },
   { level: 7, name: '未来人', csv: miraijin },
-  { level: -1, name: '忍者', csv: ninja },
+  { level: NINJA_LEVEL, name: '忍者', csv: ninja },
 ] as const;

@@ -1,7 +1,7 @@
 import { text, toSvg } from './csv';
 import { evolutionMap } from './evolutions';
 import { Grass } from './type';
-import { getFormattedDate } from './util';
+import { getFormattedDate, seededRandom } from './util';
 
 // 草のレスポンスを配列に変換する
 export function formatGrasse(grass: Grass): number[] {
@@ -45,6 +45,14 @@ export function smoothLevels(levels: number[], max: number): number[] {
 // レベルの配列を指定した長さに調整する
 export function adjustLevels(levels: number[], length: number): number[] {
   return length < 2 ? levels : levels.slice(-length);
+}
+
+// シード(ユーザー名など)をもとにした乱数で、稀にレベルを置き換える
+export function replaceRandom(levels: number[], seed: string, chancePercent: number, replaceLevel: number): number[] {
+  return levels.map((level, i) => {
+    const random = seededRandom(`${seed}-${i}`) * 100;
+    return random < chancePercent ? replaceLevel : level;
+  });
 }
 
 // レベルからイラストのパスを取得する

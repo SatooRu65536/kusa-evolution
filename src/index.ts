@@ -2,7 +2,8 @@ import { Context, Hono } from 'hono';
 import { env } from 'hono/adapter';
 import { toMessageSvg } from './csv';
 import { fetchGrass } from './fetcher';
-import { adjustLevels, formatGrasse, levels2csv, smoothLevels } from './convert';
+import { adjustLevels, formatGrasse, levels2csv, replaceRandom, smoothLevels } from './convert';
+import { NINJA_LEVEL } from './evolutions';
 
 export interface Env extends Record<string, string> {
   GITHUB_TOKEN: string;
@@ -11,6 +12,7 @@ export interface Env extends Record<string, string> {
 const app = new Hono();
 
 const SVG_HEADER = { 'Content-Type': 'image/svg+xml' };
+const NINJA_CHANCE_PERCENT = 5;
 
 function errorSvg(c: Context, message: string, status: 400 | 500) {
   return c.body(toMessageSvg(message), status, SVG_HEADER);
@@ -48,12 +50,13 @@ app.get('/evolution', async (c) => {
   const levels = formatGrasse(grassRes.data.user.contributionsCollection);
   const smoothedLevels = smoothLevels(levels, 7);
   const adjustedLevels = adjustLevels(smoothedLevels, 7);
+  const finalLevels = replaceRandom(adjustedLevels, query.username, NINJA_CHANCE_PERCENT, NINJA_LEVEL);
 
   const darkmode = query.darkmode === 'true';
   const color = query.color ?? (darkmode ? 'white' : 'black');
   const bg = query.bg ?? (darkmode ? 'black' : 'white');
 
-  const evolutionCsv = levels2csv(adjustedLevels, color, bg);
+  const evolutionCsv = levels2csv(finalLevels, color, bg);
 
   return c.body(evolutionCsv, 200, SVG_HEADER);
 });
